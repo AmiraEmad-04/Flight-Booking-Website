@@ -10,60 +10,91 @@ class Flight
         $this->conn = Database::getInstance()->getConnection();
     }
 
-public function searchFlights($from, $to)
-{
-    $sql = "
-        SELECT *
-        FROM flights
-        WHERE 
-            is_cancelled = 0
-            AND is_completed = 0
-            AND registered_passengers < max_passengers
-            AND itinerary LIKE :fromCity
-            AND itinerary LIKE :toCity
-    ";
+    public function searchFlights($from, $to)
+    {
+        $sql = "
+            SELECT *
+            FROM flights
+            WHERE 
+                is_cancelled = 0
+                AND is_completed = 0
+                AND registered_passengers < max_passengers
+                AND itinerary LIKE :fromCity
+                AND itinerary LIKE :toCity
+        ";
 
-    $stmt = $this->conn->prepare($sql);
-    $stmt->execute([
-        ':fromCity' => '%' . $from . '%',
-        ':toCity'   => '%' . $to . '%'
-    ]);
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            ':fromCity' => '%' . $from . '%',
+            ':toCity'   => '%' . $to . '%'
+        ]);
 
-    $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // ✅ FILTER BY ORDER (FROM → TO)
-    $validFlights = [];
+        // ✅ FILTER BY ORDER (FROM → TO)
+        $validFlights = [];
 
-    foreach ($flights as $flight) {
-        $itinerary = strtolower($flight['itinerary']);
+        foreach ($flights as $flight) {
+            $itinerary = strtolower($flight['itinerary']);
 
-        $fromPos = strpos($itinerary, strtolower($from));
-        $toPos   = strpos($itinerary, strtolower($to));
+            $fromPos = strpos($itinerary, strtolower($from));
+            $toPos   = strpos($itinerary, strtolower($to));
 
-        if ($fromPos !== false && $toPos !== false && $fromPos < $toPos) {
-            $validFlights[] = $flight;
+            if ($fromPos !== false && $toPos !== false && $fromPos < $toPos) {
+                $validFlights[] = $flight;
+            }
         }
+
+        return $validFlights;
     }
 
-    return $validFlights;
-}
+    public function getFlightById($id)
+    {
+        $sql = "
+            SELECT *
+            FROM flights
+            WHERE id = :Id
+            LIMIT 1
+        ";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            ':Id' => $id
+        ]);
 
-public function getFlightById($id)
-{
-    $sql = "
-        SELECT *
-        FROM flights
-        WHERE id = :Id
-        LIMIT 1
-    ";
-    $stmt = $this->conn->prepare($sql);
-    $stmt->execute([
-        ':Id' => $id
-    ]);
+        $flight = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $flight = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $flight;
+    }
 
-    return $flight;
-}
+    public function getPassengerByUserId($userId)
+    {
+        $sql = "
+            SELECT *
+            FROM passengers
+            WHERE user_id = :userId
+            LIMIT 1
+        ";
 
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            ':userId' => $userId
+        ]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+    public function increaseRegisteredPassengers($flightId)
+    {
+        $sql = "
+            UPDATE flights
+            SET registered_passengers = registered_passengers + 1
+            WHERE id = :flightId
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            ':flightId' => $flightId
+        ]);
+    }
 }

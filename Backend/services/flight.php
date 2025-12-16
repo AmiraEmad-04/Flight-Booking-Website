@@ -13,6 +13,10 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     echo json_encode($controller->getFlightInfo());
     exit;
 }
+elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['userId']) && isset($_GET['flightId'])) {
+    echo json_encode($controller->bookFlight());
+    exit;
+}
 
 echo json_encode([
     'status' => false,

@@ -58,4 +58,5 @@ class FlightController
             'data' => $flight
         ];
     }
+
 }

@@ -10,13 +10,9 @@ class Bookings
         $this->conn = Database::getInstance()->getConnection();
     }
 
-    public function getPassengerById($id)
+    public function getConnection()
     {
-        $stmt = $this->conn->prepare("
-            SELECT * FROM passengers WHERE id = :id LIMIT 1
-        ");
-        $stmt->execute([':id' => $id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->conn;
     }
 
     public function isPassengerBooked($passengerId, $flightId)

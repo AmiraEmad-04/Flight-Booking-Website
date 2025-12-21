@@ -7,7 +7,8 @@ $controller = new BookingsController();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_GET['passengerId'])
-    && isset($_GET['flightId'])) {
+    && isset($_GET['flightId'])
+    && isset($_GET['paymentType'])) {
 
     echo json_encode($controller->bookFlight());
     exit;

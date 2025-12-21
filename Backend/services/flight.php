@@ -5,16 +5,12 @@ require_once __DIR__ . '/../controllers/FlightController.php';
 
 $controller = new FlightController();
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['from'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['from']) && isset($_GET['to'])) {
     echo json_encode($controller->search());
     exit;
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     echo json_encode($controller->getFlightInfo());
-    exit;
-}
-elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['userId']) && isset($_GET['flightId'])) {
-    echo json_encode($controller->bookFlight());
     exit;
 }
 

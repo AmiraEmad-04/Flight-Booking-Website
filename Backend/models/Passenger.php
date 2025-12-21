@@ -13,7 +13,7 @@ class Passenger {
         try {
             $this->conn->beginTransaction();
             
-            // إضافة المستخدم في جدول users
+           
             $query = "INSERT INTO users (name, email, password, tel, type, account_balance) 
                       VALUES (?, ?, ?, ?, 'passenger', ?)";
             $stmt = $this->conn->prepare($query);
@@ -28,7 +28,7 @@ class Passenger {
             
             $userId = $this->conn->lastInsertId();
             
-            // إضافة بيانات الراكب
+           
             $query2 = "INSERT INTO passengers (user_id, photo, passport_img) 
                        VALUES (?, NULL, NULL)";
             $stmt2 = $this->conn->prepare($query2);

@@ -3,6 +3,6 @@ return [
     "host" => "localhost",
     "dbname" => "Flight-Booking-System",
     "user" => "root",
-    "password" => "12345678",
+    "password" => "",
     "charset" => "utf8mb4"
 ];

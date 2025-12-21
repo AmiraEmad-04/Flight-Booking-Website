@@ -1,18 +1,16 @@
 <?php
+session_start();
 
-require_once __DIR__ . '/../utils/Database.php';
 require_once __DIR__ . '/../models/Flight.php';
 require_once __DIR__ . '/../utils/Validator.php';
 
-session_start();
+$flightModel = new Flight();
 
 // Check if user is logged in and is a company
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'company') {
     header('Location: ../../Frontend/views/auth/login.php');
     exit();
 }
-
-$flightModel = new Flight();
 
 // Handle different actions
 $action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -31,7 +29,7 @@ switch ($action) {
         exit();
 }
 
-// Function to handle adding a flight
+// Function to add flight
 function handleAddFlight($flightModel) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors = [];
@@ -50,50 +48,35 @@ function handleAddFlight($flightModel) {
         }
 
         if (!Validator::positiveNumber($_POST['fees'])) {
-            $errors[] = "Fees must be a positive number";
+            $errors[] = "Valid fees amount is required";
         }
 
         if (!Validator::positiveNumber($_POST['max_passengers'])) {
-            $errors[] = "Max passengers must be a positive number";
+            $errors[] = "Valid max passengers number is required";
         }
 
         if (!Validator::dateTime($_POST['start_datetime'])) {
-            $errors[] = "Invalid start date/time";
+            $errors[] = "Valid start date and time is required";
         }
 
         if (!Validator::dateTime($_POST['end_datetime'])) {
-            $errors[] = "Invalid end date/time";
+            $errors[] = "Valid end date and time is required";
         }
 
-        // Check if end date is after start date
+        // Check if end time is after start time
         if (strtotime($_POST['end_datetime']) <= strtotime($_POST['start_datetime'])) {
             $errors[] = "End date must be after start date";
         }
 
         if (empty($errors)) {
-            try {
-                $flightData = [
-                    'company_id' => $_SESSION['company_id'],
-                    'flight_name' => $_POST['flight_name'],
-                    'flight_code' => $_POST['flight_code'],
-                    'itinerary' => $_POST['itinerary'],
-                    'fees' => $_POST['fees'],
-                    'max_passengers' => $_POST['max_passengers'],
-                    'start_datetime' => $_POST['start_datetime'],
-                    'end_datetime' => $_POST['end_datetime']
-                ];
-
-                $flightModel->createFlight($flightData);
+            $result = $flightModel->addFlight($_SESSION['company_id'], $_POST);
+            
+            if ($result) {
                 $_SESSION['success'] = "Flight added successfully!";
                 header('Location: ../../Frontend/views/company/index.php');
                 exit();
-
-            } catch (PDOException $e) {
-                if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
-                    $errors[] = "Flight code already exists";
-                } else {
-                    $errors[] = "Error adding flight: " . $e->getMessage();
-                }
+            } else {
+                $errors[] = "Failed to add flight. Flight code may already exist.";
             }
         }
 
@@ -104,17 +87,29 @@ function handleAddFlight($flightModel) {
     }
 }
 
-// Function to handle cancelling a flight
+// Function to cancel flight
 function handleCancelFlight($flightModel) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['flight_id'])) {
-        try {
-            $flightModel->cancelFlight($_POST['flight_id']);
-            $_SESSION['success'] = "Flight cancelled and passengers refunded successfully!";
-        } catch (Exception $e) {
-            $_SESSION['errors'] = ["Error cancelling flight: " . $e->getMessage()];
+        $flightId = $_POST['flight_id'];
+        
+        // Verify this flight belongs to the logged-in company
+        $flight = $flightModel->getFlightById($flightId);
+        
+        if (!$flight || $flight['company_id'] != $_SESSION['company_id']) {
+            $_SESSION['errors'] = ["You don't have permission to cancel this flight"];
+            header('Location: ../../Frontend/views/company/index.php');
+            exit();
+        }
+
+        $result = $flightModel->cancelFlightWithRefund($flightId);
+        
+        if ($result) {
+            $_SESSION['success'] = "Flight cancelled successfully and passengers refunded!";
+        } else {
+            $_SESSION['errors'] = ["Failed to cancel flight"];
         }
         
-        header('Location: ../../Frontend/views/company/index.php');
+        header('Location: ../../Frontend/views/company/flight.php?id=' . $flightId);
         exit();
     }
 }

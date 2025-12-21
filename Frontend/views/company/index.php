@@ -3,7 +3,8 @@ session_start();
 
 // Check if user is logged in and is a company
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'company') {
-    header('Location: ../auth/login.php');
+    // Redirect to test login for development
+    header('Location: test_login.php');
     exit();
 }
 
@@ -22,6 +23,11 @@ $stmt = $db->prepare("SELECT u.*, c.id as company_id, c.bio, c.address, c.locati
                       WHERE u.id = :user_id");
 $stmt->execute(['user_id' => $_SESSION['user_id']]);
 $company = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Check if company data was found
+if (!$company) {
+    die("Error: Company not found for user ID " . $_SESSION['user_id']);
+}
 
 // Store company_id in session for later use
 if ($company && !isset($_SESSION['company_id'])) {
@@ -273,7 +279,7 @@ unset($_SESSION['success'], $_SESSION['errors'], $_SESSION['old_input']);
                 <span class="badge"><?php echo $unreadCount; ?></span>
             <?php endif; ?>
         </a>
-        <a href="../auth/logout.php">Logout</a>
+        <a href="test_login.php">Logout</a>
     </div>
 </div>
 

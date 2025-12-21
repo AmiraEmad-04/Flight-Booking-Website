@@ -3,7 +3,7 @@ session_start();
 
 // Check if user is logged in and is a company
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'company') {
-    header('Location: ../auth/login.php');
+    header('Location: test_login.php');
     exit();
 }
 
@@ -20,6 +20,11 @@ $stmt = $db->prepare("SELECT u.*, c.id as company_id, c.bio, c.address, c.locati
                       WHERE u.id = :user_id");
 $stmt->execute(['user_id' => $_SESSION['user_id']]);
 $company = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Check if company data was found
+if (!$company) {
+    die("Error: Company not found for user ID " . $_SESSION['user_id']);
+}
 
 // Get flights count
 $flightCount = $flightModel->countFlightsByCompany($_SESSION['company_id']);
@@ -266,7 +271,7 @@ $editMode = isset($_GET['edit']) && $_GET['edit'] == 'true';
         <a href="index.php">Home</a>
         <a href="profile.php">Profile</a>
         <a href="message.php">Messages</a>
-        <a href="../auth/logout.php">Logout</a>
+        <a href="test_login.php">Logout</a>
     </div>
 </div>
 
@@ -357,17 +362,17 @@ $editMode = isset($_GET['edit']) && $_GET['edit'] == 'true';
                 
                 <div class="form-group">
                     <label>Bio</label>
-                    <textarea name="bio"><?php echo htmlspecialchars($company['bio']); ?></textarea>
+                    <textarea name="bio"><?php echo htmlspecialchars($company['bio'] ?? ''); ?></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Address</label>
-                    <input type="text" name="address" value="<?php echo htmlspecialchars($company['address']); ?>">
+                    <input type="text" name="address" value="<?php echo htmlspecialchars($company['address'] ?? ''); ?>">
                 </div>
                 
                 <div class="form-group">
                     <label>Location</label>
-                    <input type="text" name="location" value="<?php echo htmlspecialchars($company['location']); ?>">
+                    <input type="text" name="location" value="<?php echo htmlspecialchars($company['location'] ?? ''); ?>">
                 </div>
                 
                 <div class="form-group">

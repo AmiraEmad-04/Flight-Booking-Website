@@ -1,6 +1,5 @@
 <?php
 
-// Include Database utility
 require_once __DIR__ . '/../utils/Database.php';
 
 class Flight {
@@ -10,49 +9,48 @@ class Flight {
         $this->db = Database::getInstance()->getConnection();
     }
 
-    // Get all flights for a specific company
+    // Get flight by ID
+    public function getFlightById($flightId) {
+        $sql = "SELECT f.*, c.id as company_id, u.name as company_name 
+                FROM flights f
+                JOIN companies c ON f.company_id = c.id
+                JOIN users u ON c.user_id = u.id
+                WHERE f.id = :flight_id";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['flight_id' => $flightId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Get all flights by company
     public function getFlightsByCompany($companyId) {
-        $sql = "SELECT * FROM flights WHERE company_id = :company_id ORDER BY start_datetime DESC";
+        $sql = "SELECT * FROM flights 
+                WHERE company_id = :company_id 
+                ORDER BY start_datetime DESC";
+        
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['company_id' => $companyId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Get single flight by ID
-    public function getFlightById($flightId) {
-        $sql = "SELECT * FROM flights WHERE id = :id";
+    // Count flights by company
+    public function countFlightsByCompany($companyId) {
+        $sql = "SELECT COUNT(*) as count FROM flights WHERE company_id = :company_id";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $flightId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Create new flight
-    public function createFlight($data) {
-        $sql = "INSERT INTO flights 
-                (company_id, flight_name, flight_code, itinerary, fees, max_passengers, start_datetime, end_datetime) 
-                VALUES 
-                (:company_id, :flight_name, :flight_code, :itinerary, :fees, :max_passengers, :start_datetime, :end_datetime)";
-        
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            'company_id' => $data['company_id'],
-            'flight_name' => $data['flight_name'],
-            'flight_code' => $data['flight_code'],
-            'itinerary' => $data['itinerary'],
-            'fees' => $data['fees'],
-            'max_passengers' => $data['max_passengers'],
-            'start_datetime' => $data['start_datetime'],
-            'end_datetime' => $data['end_datetime']
-        ]);
+        $stmt->execute(['company_id' => $companyId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'];
     }
 
     // Get pending passengers for a flight
     public function getPendingPassengers($flightId) {
-        $sql = "SELECT u.name, u.email, u.tel, b.id as booking_id, b.payment_type
+        $sql = "SELECT b.id as booking_id, b.payment_type, 
+                       u.name, u.email, u.tel, p.photo
                 FROM bookings b
                 JOIN passengers p ON b.passenger_id = p.id
                 JOIN users u ON p.user_id = u.id
-                WHERE b.flight_id = :flight_id AND b.status = 'pending'";
+                WHERE b.flight_id = :flight_id AND b.status = 'pending'
+                ORDER BY b.booking_date";
         
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['flight_id' => $flightId]);
@@ -61,75 +59,96 @@ class Flight {
 
     // Get registered passengers for a flight
     public function getRegisteredPassengers($flightId) {
-        $sql = "SELECT u.name, u.email, u.tel, b.id as booking_id, b.payment_type
+        $sql = "SELECT b.id as booking_id, b.payment_type, 
+                       u.name, u.email, u.tel, p.photo
                 FROM bookings b
                 JOIN passengers p ON b.passenger_id = p.id
                 JOIN users u ON p.user_id = u.id
-                WHERE b.flight_id = :flight_id AND b.status = 'registered'";
+                WHERE b.flight_id = :flight_id AND b.status = 'registered'
+                ORDER BY b.booking_date";
         
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['flight_id' => $flightId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Add new flight
+    public function addFlight($companyId, $data) {
+        $sql = "INSERT INTO flights 
+                (company_id, flight_name, flight_code, itinerary, fees, 
+                 max_passengers, start_datetime, end_datetime, registered_passengers)
+                VALUES 
+                (:company_id, :flight_name, :flight_code, :itinerary, :fees, 
+                 :max_passengers, :start_datetime, :end_datetime, 0)";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        try {
+            return $stmt->execute([
+                'company_id' => $companyId,
+                'flight_name' => $data['flight_name'],
+                'flight_code' => $data['flight_code'],
+                'itinerary' => $data['itinerary'],
+                'fees' => $data['fees'],
+                'max_passengers' => $data['max_passengers'],
+                'start_datetime' => $data['start_datetime'],
+                'end_datetime' => $data['end_datetime']
+            ]);
+        } catch (PDOException $e) {
+            // Return false and store error
+            return false;
+        }
+    }
+
     // Cancel flight and refund passengers
-    public function cancelFlight($flightId) {
+    public function cancelFlightWithRefund($flightId) {
         try {
             $this->db->beginTransaction();
 
-            // Get flight details
-            $flight = $this->getFlightById($flightId);
-            if (!$flight) {
-                throw new Exception("Flight not found");
-            }
+            // Get flight fees
+            $stmt = $this->db->prepare("SELECT fees FROM flights WHERE id = :flight_id");
+            $stmt->execute(['flight_id' => $flightId]);
+            $flight = $stmt->fetch(PDO::FETCH_ASSOC);
+            $fees = $flight['fees'];
 
-            // Get all passengers who paid with account
-            $sql = "SELECT p.user_id, b.payment_type
-                    FROM bookings b
-                    JOIN passengers p ON b.passenger_id = p.id
-                    WHERE b.flight_id = :flight_id AND b.status IN ('pending', 'registered')";
-            
-            $stmt = $this->db->prepare($sql);
+            // Get all passengers who paid from account
+            $stmt = $this->db->prepare("
+                SELECT DISTINCT p.user_id 
+                FROM bookings b 
+                JOIN passengers p ON b.passenger_id = p.id
+                WHERE b.flight_id = :flight_id 
+                AND b.payment_type = 'account'
+                AND b.status IN ('registered', 'pending')
+            ");
             $stmt->execute(['flight_id' => $flightId]);
             $passengers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             // Refund each passenger
             foreach ($passengers as $passenger) {
-                if ($passenger['payment_type'] === 'account') {
-                    $refundSql = "UPDATE users SET account_balance = account_balance + :fees WHERE id = :user_id";
-                    $refundStmt = $this->db->prepare($refundSql);
-                    $refundStmt->execute([
-                        'fees' => $flight['fees'],
-                        'user_id' => $passenger['user_id']
-                    ]);
-                }
+                $refundStmt = $this->db->prepare("
+                    UPDATE users 
+                    SET account_balance = account_balance + :fees 
+                    WHERE id = :user_id
+                ");
+                $refundStmt->execute([
+                    'fees' => $fees,
+                    'user_id' => $passenger['user_id']
+                ]);
             }
 
-            // Update all bookings to cancelled
-            $cancelBookingsSql = "UPDATE bookings SET status = 'cancelled' WHERE flight_id = :flight_id";
-            $cancelStmt = $this->db->prepare($cancelBookingsSql);
-            $cancelStmt->execute(['flight_id' => $flightId]);
+            // Update bookings to cancelled
+            $stmt = $this->db->prepare("UPDATE bookings SET status = 'cancelled' WHERE flight_id = :flight_id");
+            $stmt->execute(['flight_id' => $flightId]);
 
-            // Mark flight as cancelled
-            $cancelFlightSql = "UPDATE flights SET is_cancelled = 1 WHERE id = :flight_id";
-            $flightStmt = $this->db->prepare($cancelFlightSql);
-            $flightStmt->execute(['flight_id' => $flightId]);
+            // Cancel the flight
+            $stmt = $this->db->prepare("UPDATE flights SET is_cancelled = 1 WHERE id = :flight_id");
+            $stmt->execute(['flight_id' => $flightId]);
 
             $this->db->commit();
             return true;
-
         } catch (Exception $e) {
             $this->db->rollBack();
-            throw $e;
+            return false;
         }
-    }
-
-    // Count flights for a company
-    public function countFlightsByCompany($companyId) {
-        $sql = "SELECT COUNT(*) as total FROM flights WHERE company_id = :company_id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['company_id' => $companyId]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'];
     }
 }

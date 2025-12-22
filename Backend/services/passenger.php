@@ -9,9 +9,13 @@ require_once __DIR__ . '/../controllers/PassengerController.php';
 try {
     session_start();
     
-    // For testing: Set passenger_id in session
+    // // For testing: Set passenger_id in session
+    // if (!isset($_SESSION['passenger_id'])) {
+    //     $_SESSION['passenger_id'] = 1; // Malak (passenger_id = 1)
+    // }
     if (!isset($_SESSION['passenger_id'])) {
-        $_SESSION['passenger_id'] = 1; // Malak (passenger_id = 1)
+        echo json_encode(['status' => false, 'message' => 'Unauthorized']);
+        exit;
     }
     
     $controller = new PassengerController();

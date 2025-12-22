@@ -5,6 +5,7 @@ class Database {
     private $connection;
 
     private function __construct() {
+        // Updated path to config file - now goes up one level to Backend, then into config
         $config = require __DIR__ . '/../config/database.php';
 
         try {
@@ -16,6 +17,7 @@ class Database {
             );
 
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
             die("Database connection failed: " . $e->getMessage());

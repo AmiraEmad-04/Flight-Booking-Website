@@ -26,7 +26,7 @@ class BookingsController
         }
 
         // 2️⃣ Flight exists
-        $flight = $flightModel->getFlightById($flightId);
+        $flight = $flightModel->getFlightDetails($flightId);
         if (!$flight) {
             return ['status' => false, 'message' => 'Flight not found'];
         }

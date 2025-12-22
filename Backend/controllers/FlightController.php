@@ -44,7 +44,7 @@ class FlightController
         $id = (int) $_GET['id'];
 
         $flightModel = new Flight();
-        $flight = $flightModel->getFlightById($id);
+        $flight = $flightModel->getFlightDetails($id);
 
         if (!$flight) {
             return [

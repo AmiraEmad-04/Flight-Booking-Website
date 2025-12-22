@@ -6,8 +6,13 @@ $action = $_GET['action'] ?? '';
 header('Content-Type: application/json');
 
 
-if($action === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST'){
-    $result = $auth->register($_POST);
+if($action === 'registerUser' && $_SERVER['REQUEST_METHOD'] === 'POST'){
+    $result = $auth->registerUser($_POST);
+    echo json_encode($result);
+}
+
+if($action === 'registerDetails' && $_SERVER['REQUEST_METHOD'] === 'POST'){
+    $result = $auth->registerDetails($_POST);
     echo json_encode($result);
 }
 

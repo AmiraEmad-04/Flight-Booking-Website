@@ -14,19 +14,23 @@ class User{
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    // Register only basic info and account balance
     public function register($data){
         $stmt = $this->conn->prepare("
-        INSERT INTO users (name , email , password , tel , type , account_balance) 
-        VALUES (:name, :email, :password, :tel, :type, :account_balance)
+            INSERT INTO users (name, email, password, tel, type, account_balance)
+            VALUES (:name, :email, :password, :tel, :type, :account_balance)
         ");
-        return $stmt->execute([
+
+        $stmt->execute([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => password_hash($data['password'], PASSWORD_DEFAULT),
             'tel' => $data['tel'],
             'type' => $data['type'],
-            'account_balance' => 0.00
+            'account_balance' => $data['account_balance']
         ]);
+
+        return $this->conn->lastInsertId(); // return inserted user ID for step 2
     }
 
     public function login($email, $password){

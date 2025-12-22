@@ -52,39 +52,17 @@ CREATE TABLE `companies` (
 -- PASSENGERS
 -- ==============================
 
--- CREATE TABLE `passengers` (
---   `id` INT(11) NOT NULL AUTO_INCREMENT,
---   `user_id` INT(11) NOT NULL,
---   `photo` VARCHAR(255),
---   `passport_img` VARCHAR(255),
---   PRIMARY KEY (`id`),
---   UNIQUE KEY `user_id` (`user_id`),
---   CONSTRAINT `passengers_fk_user`
---     FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
---     ON DELETE CASCADE
--- ) ENGINE=InnoDB;
-CREATE TABLE passengers (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    tel VARCHAR(20),
-    photo VARCHAR(255),
-    passport_img VARCHAR(255),
-    account_balance DECIMAL(10,2) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE passenger_flights (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    passenger_id INT,
-    flight_id INT,
-    status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
-    payment_type ENUM('account', 'cash'),
-    booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (passenger_id) REFERENCES passengers(id),
-    FOREIGN KEY (flight_id) REFERENCES flights(id)
-);
+CREATE TABLE `passengers` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) NOT NULL,
+  `photo` VARCHAR(255),
+  `passport_img` VARCHAR(255),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`),
+  CONSTRAINT `passengers_fk_user`
+    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
 
 -- ==============================
 -- FLIGHTS

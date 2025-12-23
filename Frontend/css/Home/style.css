@@ -211,17 +211,7 @@ body {
     color: #1a2980;
 }
 
-.section-title h2 {
-    font-size: 36px;
-    color: #1a2980;
-    margin-bottom: 10px;
-}
 
-.section-title h3 {
-    font-size: 28px;
-    color: #666;
-    font-weight: 400;
-}
 
 .features-grid {
     display: flex;

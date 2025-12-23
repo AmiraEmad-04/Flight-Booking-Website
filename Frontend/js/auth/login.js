@@ -2,7 +2,7 @@ $(document).ready(function() {
     $('#loginForm').submit(function(e) {
         e.preventDefault();
         $.ajax({
-            url: '/flight_booking_project/Flight-Booking-Website/Backend/services/auth.php?action=login',
+            url: '/Flight-Booking-Website/Backend/services/auth.php?action=login',
             type: 'POST',
             data: $(this).serialize(),
             dataType: 'json',

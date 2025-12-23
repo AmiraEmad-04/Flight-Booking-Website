@@ -32,38 +32,75 @@ class AuthController{
         return ['status'=>'success','user_id'=>$user_id,'type'=>$data['type']];
     }
 
-    // Step 2: add company/passenger details after user is created
-    public function registerDetails($data){
-        if(!isset($data['user_id']) || !isset($data['type'])){
-            return ['status'=>'error','message'=>'Missing user_id or type'];
-        }
-
-        $user_id = $data['user_id'];
-        $type = $data['type'];
-
-        if($type === 'company'){
-            $errors = [];
-            if(!Validator::required($data['bio'])) $errors[] = "Company bio required";
-            if(!Validator::required($data['address'])) $errors[] = "Company address required";
-            if(!empty($errors)) return ['status'=>'error','errors'=>$errors];
-
-            $company = new Company();
-            $company->create($user_id, $data);
-
-        } elseif($type === 'passenger'){
-            $errors = [];
-            if(!Validator::required($data['passport_img'])) $errors[] = "Passport image required";
-            if(!empty($errors)) return ['status'=>'error','errors'=>$errors];
-
-            $passenger = new Passenger();
-            $passenger->create($user_id, $data);
-        } else {
-            return ['status'=>'error','message'=>'Invalid type'];
-        }
-
-        return ['status'=>'success','message'=>'Details saved, redirect to login'];
+    public function registerDetails($data, $files = null) {
+    if (!isset($data['user_id']) || !isset($data['type'])) {
+        return ['status' => 'error', 'message' => 'Missing user_id or type'];
     }
 
+    $user_id = $data['user_id'];
+    $type = $data['type'];
+    $files = $files ?: $_FILES;  // Use passed files or global $_FILES
+
+    require_once __DIR__ . '/../utils/FileUpload.php';  // Make sure path is correct
+
+    if ($type === 'company') {
+        $errors = [];
+        if (empty($data['bio'])) $errors[] = "Company bio required";
+        if (empty($data['address'])) $errors[] = "Company address required";
+        if (empty($files['logo_img']['name'])) $errors[] = "Company logo required";
+
+        if (!empty($errors)) {
+            return ['status' => 'error', 'errors' => $errors];
+        }
+
+        // Upload logo
+        $uploader = new FileUpload(__DIR__ . '/../uploads/logos/');
+        $result = $uploader->upload($files['logo_img']);
+
+        if (!$result['success']) {
+            return ['status' => 'error', 'errors' => [$result['message']]];
+        }
+
+        $data['logo_img'] = $result['filename'];
+
+        $company = new Company();
+        $company->create($user_id, $data);
+
+    } elseif ($type === 'passenger') {
+        $errors = [];
+        if (empty($files['photo']['name'])) $errors[] = "Profile photo required";
+        if (empty($files['passport_img']['name'])) $errors[] = "Passport image required";
+
+        if (!empty($errors)) {
+            return ['status' => 'error', 'errors' => $errors];
+        }
+
+        // Upload photo
+        $uploaderPhoto = new FileUpload(__DIR__ . '/../uploads/photos/');
+        $photoResult = $uploaderPhoto->upload($files['photo']);
+        if (!$photoResult['success']) {
+            return ['status' => 'error', 'errors' => [$photoResult['message']]];
+        }
+
+        // Upload passport
+        $uploaderPassport = new FileUpload(__DIR__ . '/../uploads/passports/');
+        $passportResult = $uploaderPassport->upload($files['passport_img']);
+        if (!$passportResult['success']) {
+            return ['status' => 'error', 'errors' => [$passportResult['message']]];
+        }
+
+        $data['photo'] = $photoResult['filename'];
+        $data['passport_img'] = $passportResult['filename'];
+
+        $passenger = new Passenger();
+        $passenger->create($user_id, $data);
+
+    } else {
+        return ['status' => 'error', 'message' => 'Invalid type'];
+    }
+
+    return ['status' => 'success', 'message' => 'Account created successfully!'];
+}
 
     public function login($data) {
         $user = $this->user->login($data['email'], $data['password']);

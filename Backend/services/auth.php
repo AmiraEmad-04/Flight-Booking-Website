@@ -12,7 +12,7 @@ if($action === 'registerUser' && $_SERVER['REQUEST_METHOD'] === 'POST'){
 }
 
 if($action === 'registerDetails' && $_SERVER['REQUEST_METHOD'] === 'POST'){
-    $result = $auth->registerDetails($_POST);
+    $result = $auth->registerDetails($_POST,$_FILES);
     echo json_encode($result);
 }
 

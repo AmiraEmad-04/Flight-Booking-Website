@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKYBOOK</title>
     <?php include '../../navbar/navbar_css.php'; ?> <!-- Fixed path -->
-    <link rel="stylesheet" href="../../css/Home/style.css">
+    <link rel="stylesheet" href="../../css/Home/style.css?v=<?php echo time(); ?>">
     <script src="../../js/jquery.min.js"></script>
     <script src="../../js/jquery-ui.min.js"></script>
 </head>

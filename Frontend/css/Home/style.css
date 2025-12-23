@@ -10,10 +10,15 @@ html {
 }
 
 body {
-    background-color: #f5f9ff;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                url('../../images/photo-1436491865332-7a61a109cc05.avif');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
     color: #333;
     line-height: 1.6;
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
 .container {
@@ -112,7 +117,7 @@ body {
 /* ========== SERVICES SECTION ========== */
 .services {
     padding: 80px 0;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.95);
 }
 
 .services-grid {
@@ -197,7 +202,7 @@ body {
 /* ========== FEATURES SECTION ========== */
 .features {
     padding: 80px 0;
-    background-color: #f5f9ff;
+    background-color: rgba(245, 249, 255, 0.95);
     scroll-margin-top: 20px;
 }
 

@@ -28,75 +28,6 @@ body {
   line-height: 1.6;
 }
 
-/* Navigation Bar */
-.navbar {
-  background: var(--card);
-  padding: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.navbar-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 70px;
-}
-
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-  color: var(--foreground);
-  font-weight: 700;
-  font-size: 1.5rem;
-}
-
-.brand-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--primary);
-  color: white;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-}
-
-.navbar-nav {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  list-style: none;
-}
-
-.nav-link {
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  color: var(--foreground);
-  font-weight: 500;
-  border-radius: 6px;
-  transition: background 0.2s, color 0.2s;
-}
-
-.nav-link:hover {
-  background: var(--accent);
-}
-
-.nav-link.btn-register {
-  background: var(--primary);
-  color: white;
-  padding: 0.5rem 1.25rem;
-}
-
-.nav-link.btn-register:hover {
-  opacity: 0.9;
-}
-
 /* Hero Section */
 .hero-section {
   background-image: url('../../images/photo-1436491865332-7a61a109cc05.avif');
@@ -118,7 +49,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 58, 138, 0.85), rgba(29, 78, 216, 0.75));
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
   z-index: 1;
 }
 

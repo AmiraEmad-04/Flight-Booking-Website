@@ -113,7 +113,7 @@ class AuthController{
 
     public function logout(){
         session_destroy();
-        return ['status' => 'success'];
+        return ['status' => 'success', 'redirect' => '../../../Frontend/pages/auth/login.php'];
     }
 }
 ?>

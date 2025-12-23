@@ -1,10 +1,7 @@
 <?php 
-$flightId = $GET['flightId'] ?? null;
-$passengerId = 1;
+$flightId = $_GET['flightId'] ?? null; 
+$passengerId = 1; 
 
-?>
-
-<?php
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -12,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Check if user is logged in
 $isLoggedIn = isset($_SESSION['user_id']);
-$userName = $isLoggedIn ? ($_SESSION['name'] ?? 'User') : '';
+$userName = $isLoggedIn ? ($_SESSION['name'] ?? 'Profile') : '';
 $userType = $isLoggedIn ? ($_SESSION['type'] ?? '') : '';
 
 // Get unread message count if logged in
@@ -25,6 +22,15 @@ if ($isLoggedIn) {
         $unreadCount = $result['count'];
     }
 }
+
+// Decide home link based on user type
+if ($userType === 'company') {
+    $homeLink = "index.php";   // <-- path for company
+} elseif ($userType === 'passenger') {
+    $homeLink = "#";      // <-- path for passenger
+} else {
+    $homeLink = "../Home/home.php";               // <-- default path
+}
 ?>
 
 <header>
@@ -33,18 +39,16 @@ if ($isLoggedIn) {
             <div class="logo">SKY<span>BOOK</span></div>
             <nav>
                 <ul>
-                    <li><a href="../Home/home.php">Home</a></li>
+                    <!-- Dynamic Home link -->
+                    <li><a href="<?php echo $homeLink; ?>">Home</a></li>
                     
                     <?php if ($isLoggedIn): ?>
                         <!-- Logged in menu -->
                         <?php if ($userType === 'passenger'): ?>
                             <li><a href="search_flights.php">Search Flights</a></li>
                             <li><a href="my_bookings.php">My Bookings</a></li>
-                        <?php elseif ($userType === 'company'): ?>
-                            <li><a href="manage_flights.php">Manage Flights</a></li>
-                            <li><a href="add_flight.php">Add Flight</a></li>
                         <?php endif; ?>
-                        
+                        <li><a href="profile.php"><?php echo htmlspecialchars($userName); ?></a></li>
                         <!-- Messages icon with badge -->
                         <li class="messages-nav-item">
                             <a href="../Messages/messages.php" class="messages-link">
@@ -56,9 +60,7 @@ if ($isLoggedIn) {
                                 <?php endif; ?>
                             </a>
                         </li>
-                        
-                        <li><a href="profile.php"><?php echo htmlspecialchars($userName); ?></a></li>
-                        <li><a href="../../Backend/services/auth.php?action=logout">Logout</a></li>
+                        <li><a href="#" onclick="handleLogout(event)">Logout</a></li>
                     <?php else: ?>
                         <!-- Not logged in menu -->
                         <li><a href="../auth/login.php">Login</a></li>

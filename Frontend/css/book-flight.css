@@ -1,6 +1,8 @@
 body {
-    background: #f4f6f8;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+            url('../../images/photo-1436491865332-7a61a109cc05.avif');
     font-family: Arial, sans-serif;
+    
 }
 
 /* Make booking-card fill modal */

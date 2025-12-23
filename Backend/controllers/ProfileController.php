@@ -17,7 +17,7 @@ class ProfileController {
         session_start();
         
         // Check if user is logged in and is a company
-        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'company') {
+        if (!isset($_SESSION['user_id']) || $_SESSION['type'] !== 'company') {
             header('Location: login.php');
             exit();
         }

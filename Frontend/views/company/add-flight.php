@@ -2,15 +2,16 @@
 session_start();
 
 // Check if user is logged in and is a company
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'company') {
+if (!isset($_SESSION['user_id']) || $_SESSION['type'] !== 'company') {
     header('Location: ../auth/login.php');
     exit();
 }
 
 // Get messages
 $errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : [];
+$success = isset($_SESSION['success']) ? $_SESSION['success'] : '';
 $oldInput = isset($_SESSION['old_input']) ? $_SESSION['old_input'] : [];
-unset($_SESSION['errors'], $_SESSION['old_input']);
+unset($_SESSION['errors'], $_SESSION['success'], $_SESSION['old_input']);
 ?>
 
 <!DOCTYPE html>
@@ -21,15 +22,20 @@ unset($_SESSION['errors'], $_SESSION['old_input']);
     <title>Add New Flight</title>
     <link rel="stylesheet" href="../../css/company/company-styles.css">
     <?php include '../../navbar/navbar_css.php'; ?>
-
 </head>
 <body>
 
-
- <?php include '../../navbar/navbar.php'; ?>
+<?php include '../../navbar/navbar.php'; ?>
 
 <!-- Main Content -->
 <div class="container" style="max-width: 800px; margin-top: 3rem;">
+    
+    <!-- Success Message -->
+    <?php if (!empty($success)): ?>
+        <div class="alert alert-success">
+            <?php echo htmlspecialchars($success); ?>
+        </div>
+    <?php endif; ?>
     
     <!-- Alert Messages -->
     <?php if (!empty($errors)): ?>
@@ -49,7 +55,8 @@ unset($_SESSION['errors'], $_SESSION['old_input']);
             </div>
         </div>
         
-        <form action="../../../Backend/services/flight.php?action=add" method="POST" id="addFlightForm">
+        <!-- FIXED: Use absolute path from root -->
+        <form action="/Flight-Booking-Website/Backend/services/flight.php?action=add" method="POST" id="addFlightForm">
             <div class="form-grid">
                 <div class="form-group">
                     <label class="form-label">Flight Name</label>
@@ -71,6 +78,7 @@ unset($_SESSION['errors'], $_SESSION['old_input']);
                         placeholder="e.g. SK101"
                         value="<?php echo isset($oldInput['flight_code']) ? htmlspecialchars($oldInput['flight_code']) : ''; ?>"
                         required>
+                    <small style="color: #666; font-size: 12px;">Must be unique</small>
                 </div>
             </div>
             
@@ -150,7 +158,13 @@ document.getElementById('addFlightForm').addEventListener('submit', function(e) 
     if (endDate <= startDate) {
         e.preventDefault();
         alert('Arrival date must be after departure date');
+        return false;
     }
+    
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Adding Flight...';
 });
 </script>
 

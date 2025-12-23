@@ -137,3 +137,26 @@
         }
     }
 </style>
+
+<script>
+    function handleLogout(event) {
+        event.preventDefault();
+        
+        // Use absolute path from root
+        const logoutUrl = window.location.origin + '/Flight-Booking-Website/Backend/services/auth.php?action=logout';
+        
+        fetch(logoutUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = window.location.origin + '/Flight-Booking-Website/Frontend/pages/auth/login.php';
+                } else {
+                    alert('Logout failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during logout');
+            });
+    }
+</script>

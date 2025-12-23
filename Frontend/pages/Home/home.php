@@ -33,7 +33,6 @@
                 </div>
                 <h3>PASSENGER</h3>
                 <p>Search & book flights</p>
-                <a href="#" class="read-more-link">Read More <img src="../../icons/arrow-right.svg" alt="→"></a>
             </div>
             <div class="service-card company-card">
                 <div class="service-icon">
@@ -41,13 +40,13 @@
                 </div>
                 <h3>COMPANY</h3>
                 <p>Manage your flights</p>
-                <a href="#" class="read-more-link">Read More <img src="../../icons/arrow-right.svg" alt="→"></a>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
     <section class="features" id="features">
+        <h1>Our Features</h1>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">

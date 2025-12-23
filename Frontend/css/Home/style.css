@@ -194,47 +194,6 @@ body {
     color: #666;
 }
 
-/* Read More Link Styles */
-.read-more-link {
-    color: #1a2980;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.3s ease;
-    padding: 8px 16px;
-    border-radius: 4px;
-}
-
-.company-card .read-more-link {
-    color: #ff7e5f;
-}
-
-.read-more-link img {
-    width: 16px;
-    height: 16px;
-    margin-left: 8px;
-    transition: transform 0.3s ease;
-    filter: invert(23%) sepia(83%) saturate(2461%) hue-rotate(221deg) brightness(91%) contrast(101%); /* Blue: #1a2980 */
-}
-
-.company-card .read-more-link img {
-    filter: invert(60%) sepia(56%) saturate(1236%) hue-rotate(327deg) brightness(101%) contrast(101%); /* Orange: #ff7e5f */
-}
-
-.read-more-link:hover {
-    background-color: rgba(26, 41, 128, 0.1);
-}
-
-.company-card .read-more-link:hover {
-    background-color: rgba(255, 126, 95, 0.1);
-}
-
-.read-more-link:hover img {
-    transform: translateX(5px);
-}
-
 /* ========== FEATURES SECTION ========== */
 .features {
     padding: 80px 0;
@@ -242,9 +201,14 @@ body {
     scroll-margin-top: 20px;
 }
 
-.section-title {
+.features h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     text-align: center;
-    margin-bottom: 60px;
+    justify-content: center;
+    color: #1a2980;
 }
 
 .section-title h2 {

@@ -1,56 +1,4 @@
-/* Navbar */
-.main-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: white;
-    padding: 20px 0;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
 
-.main-header .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    font-size: 32px;
-    font-weight: 800;
-}
-
-.sky {
-    color: var(--primary);
-}
-
-.book {
-    color: #000;
-}
-
-.main-header nav ul {
-    display: flex;
-    list-style: none;
-    gap: 40px;
-}
-
-.main-header nav a {
-    text-decoration: none;
-    color: #000;
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.register-btn {
-    background: var(--primary);
-    color: white;
-    padding: 12px 28px;
-    border-radius: 30px;
-}
 form label {
     display: block;
     text-align: left;
@@ -124,7 +72,7 @@ form textarea {
     background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
                 url('../../images/photo-1436491865332-7a61a109cc05.avif') center/cover no-repeat;
     padding: 120px 0 60px;
-    margin-top: 80px; /* Account for fixed header */
+    margin-top: 0; /* Account for fixed header */
     text-align: center;
     color: white;
 }

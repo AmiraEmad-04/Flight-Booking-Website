@@ -4,26 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SKYBOOK</title>
+    <?php include '../../navbar/navbar_css.php'; ?>
     <link rel="stylesheet" href="../../css/auth/global.css">
     <link rel="stylesheet" href="../../css/auth/forms.css">
     <script src="../../js/jquery.min.js"></script>
     <script src="../../js/auth/login.js"></script>
 </head>
 <body>
-    <header class="main-header">
-        <div class="container">
-            <div class="logo">
-                <span class="sky">SKY</span><span class="book">BOOK</span>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="../../Home/home.html">Home</a></li>
-                    <li><a href="login.php">Login</a></li>
-                    <li><a href="register.php" class="register-btn">Register</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <?php include '../../navbar/navbar.php'; ?>
 
     <section class="hero">
         <div class="hero-content">

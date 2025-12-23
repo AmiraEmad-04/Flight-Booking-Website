@@ -1,42 +1,47 @@
 <?php
+// Backend/services/message.php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-require_once __DIR__ . '/../utils/Database.php';
-require_once __DIR__ . '/../models/Message.php';
 
+
+header('Content-Type: application/json');
 session_start();
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../../Frontend/views/auth/login.php');
-    exit();
-}
+require_once __DIR__ . '/../controllers/MessageController.php';
 
-$messageModel = new Message();
+$controller = new MessageController();
 
-// Handle different actions
+// Get action from URL
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 switch ($action) {
-    case 'markread':
-        handleMarkAsRead($messageModel);
+    case 'get_chats':
+        echo json_encode($controller->getChats());
+        break;
+    
+    case 'get_messages':
+        echo json_encode($controller->getMessages());
+        break;
+    
+    case 'send':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            echo json_encode($controller->sendMessage($_POST));
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
+        }
+        break;
+    
+    case 'start_chat':
+        echo json_encode($controller->startChat());
+        break;
+
+    case 'unread_count':
+        echo json_encode($controller->getUnreadCount());
         break;
     
     default:
-        header('Location: ../../Frontend/views/company/message.php');
-        exit();
+        echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
+        break;
 }
-
-// Function to mark message as read
-function handleMarkAsRead($messageModel) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['message_id'])) {
-        $messageModel->markAsRead($_POST['message_id']);
-    }
-    
-    // Redirect based on user type
-    if ($_SESSION['user_type'] === 'company') {
-        header('Location: ../../Frontend/views/company/message.php');
-    } else {
-        header('Location: ../../Frontend/views/passenger/message.php');
-    }
-    exit();
-}
+?>

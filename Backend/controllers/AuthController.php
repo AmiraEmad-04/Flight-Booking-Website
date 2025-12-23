@@ -13,8 +13,6 @@ class AuthController{
     }
 
     public function registerUser($data){
-        $errors = [];
-
         if(!Validator::required($data['name'])) $errors[] = "Name is required";
         if(!Validator::email($data['email'])) $errors[] = "Invalid email";
         if(!Validator::minLength($data['password'],6)) $errors[] = "Password must be at least 6 charecters";
@@ -105,7 +103,6 @@ class AuthController{
     public function login($data) {
         $user = $this->user->login($data['email'], $data['password']);
         if($user){
-            session_start();
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['email'] = $user['email'];
             $_SESSION['type'] = $user['type'];
@@ -115,7 +112,6 @@ class AuthController{
     }
 
     public function logout(){
-        session_start();
         session_destroy();
         return ['status' => 'success'];
     }

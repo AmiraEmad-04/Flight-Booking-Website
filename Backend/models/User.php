@@ -9,9 +9,9 @@ class User{
         // When a User object is created, get the singleton DB connection
     }
     public function exists($email){
-        $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = :email");
+        $stmt = $this->conn->prepare("SELECT 1 FROM users WHERE email = :email LIMIT 1");
         $stmt->execute(['email' => $email]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->rowCount() > 0;
     }
 
     // Register only basic info and account balance

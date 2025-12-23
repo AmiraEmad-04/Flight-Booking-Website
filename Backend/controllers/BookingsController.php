@@ -5,11 +5,24 @@ require_once __DIR__ . '/../models/User.php';
 
 class BookingsController
 {
-    public function bookFlight()
+    public function bookFlight($data = null)
     {
-        $passengerId = (int) $_GET['passengerId'];
-        $flightId    = (int) $_GET['flightId'];
-        $paymentType = $_GET['paymentType'];
+        // If no data passed, try to get from POST/GET
+        if ($data === null) {
+            $data = !empty($_POST) ? $_POST : $_GET;
+        }
+        
+        // Validate and sanitize inputs
+        if (!isset($data['passengerId']) || !isset($data['flightId']) || !isset($data['paymentType'])) {
+            return [
+                'status' => false,
+                'message' => 'Missing required parameters'
+            ];
+        }
+        
+        $passengerId = (int) $data['passengerId'];
+        $flightId    = (int) $data['flightId'];
+        $paymentType = $data['paymentType'];
 
         if (!in_array($paymentType, ['cash', 'account'])) {
             return ['status' => false, 'message' => 'Invalid payment type'];
@@ -67,11 +80,14 @@ class BookingsController
                     -$flight['fees']
                 );
 
-                // add company
-                $userModel->updateBalance(
-                    $flight['company_id'],
-                    +$flight['fees']
-                );
+                // add to company
+                $companyUser = $userModel->getCompanyUserId($flight['company_id']);
+                if ($companyUser) {
+                    $userModel->updateBalance(
+                        $companyUser['user_id'],
+                        +$flight['fees']
+                    );
+                }
             }
 
             // 5️⃣ Insert booking
@@ -81,19 +97,27 @@ class BookingsController
                 $paymentType
             );
 
-            // 6️⃣ Increase registered passengers
-            $flightModel->increaseRegisteredPassengers($flightId);
+            // 6️⃣ Increase registered passengers (only for account payment)
+            if ($paymentType === 'account') {
+                $flightModel->increaseRegisteredPassengers($flightId);
+            }
 
             $conn->commit();
 
+            $statusMessage = $paymentType === 'account' 
+                ? 'Flight booked successfully! Payment deducted from your account.'
+                : 'Booking submitted! Please complete cash payment at the company.';
+
             return [
                 'status' => true,
-                'message' => 'Flight booked successfully',
-                'paymentType' => $paymentType
+                'message' => $statusMessage,
+                'paymentType' => $paymentType,
+                'bookingStatus' => $paymentType === 'account' ? 'registered' : 'pending'
             ];
 
         } catch (Exception $e) {
             $conn->rollBack();
+            error_log("Booking error: " . $e->getMessage());
             return [
                 'status' => false,
                 'message' => 'Booking failed',
@@ -102,3 +126,4 @@ class BookingsController
         }
     }
 }
+?>

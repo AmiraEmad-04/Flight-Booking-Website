@@ -3,7 +3,9 @@ require_once __DIR__ . '/../controllers/AuthController.php';
 
 $auth = new AuthController();
 $action = $_GET['action'] ?? '';
+session_start();
 header('Content-Type: application/json');
+
 
 
 if($action === 'registerUser' && $_SERVER['REQUEST_METHOD'] === 'POST'){

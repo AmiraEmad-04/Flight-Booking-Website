@@ -1,3 +1,9 @@
+<?php 
+$flightId = $GET['flightId'] ?? null;
+$passengerId = 1;
+
+?>
+
 <?php
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {

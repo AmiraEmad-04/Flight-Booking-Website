@@ -4,7 +4,7 @@ $(document).ready(function() {
         let formData = new FormData(this);
 
         $.ajax({
-            url: '/flight_booking_project/Flight-Booking-Website/Backend/services/auth.php?action=registerDetails',
+            url: '/Flight-Booking-Website/Backend/services/auth.php?action=registerDetails',
             type: 'POST',
             data: formData,
             contentType: false,

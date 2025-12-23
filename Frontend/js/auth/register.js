@@ -8,7 +8,7 @@ $(document).ready(function() {
     $('#registerForm').submit(function(e) {
         e.preventDefault();
         $.ajax({
-            url: '/flight_booking_project/Flight-Booking-Website/Backend/services/auth.php?action=registerUser',
+            url: '/Flight-Booking-Website/Backend/services/auth.php?action=registerUser',
             type: 'POST',
             data: $(this).serialize(),
             dataType: 'json',

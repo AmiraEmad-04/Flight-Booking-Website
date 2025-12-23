@@ -1,5 +1,4 @@
 <?php
-// Backend/controllers/MessageController.php
 
 require_once __DIR__ . '/../models/Message.php';
 

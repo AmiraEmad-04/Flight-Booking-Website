@@ -1,5 +1,4 @@
 <?php
-// Backend/models/Message.php
 
 require_once __DIR__ . '/../utils/Database.php';
 

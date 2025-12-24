@@ -1,4 +1,3 @@
-
 <?php 
 $flightId = $_GET['flightId'] ?? null; 
 $passengerId = 1; 
@@ -16,11 +15,16 @@ $userType   = $isLoggedIn ? ($_SESSION['type'] ?? '') : '';
 // Get unread message count if logged in
 $unreadCount = 0;
 if ($isLoggedIn) {
-    require_once __DIR__ . '/../../Backend/controllers/MessageController.php';
-    $msgController = new MessageController();
-    $result = $msgController->getUnreadCount();
-    if ($result['status'] === 'success') {
-        $unreadCount = $result['count'];
+    // Use absolute path from document root
+    $controllerPath = $_SERVER['DOCUMENT_ROOT'] . '/Flight-Booking-Website/Backend/controllers/MessageController.php';
+    
+    if (file_exists($controllerPath)) {
+        require_once $controllerPath;
+        $msgController = new MessageController();
+        $result = $msgController->getUnreadCount();
+        if ($result['status'] === 'success') {
+            $unreadCount = $result['count'];
+        }
     }
 }
 
@@ -67,8 +71,7 @@ if ($userType === 'company') {
                     <?php if ($isLoggedIn): ?>
                         <!-- Logged in menu -->
                         <?php if ($userType === 'passenger'): ?>
-                            <li><a href="search_flights.php">Search Flights</a></li>
-                            <li><a href="my_bookings.php">My Bookings</a></li>
+                            <li><a href="../search.php">Search Flights</a></li>
                         <?php endif; ?>
                         <li><a href="profile.php"><?php echo htmlspecialchars($userName); ?></a></li>
                         <!-- Messages icon with badge -->

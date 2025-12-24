@@ -16,18 +16,19 @@ $baseUrl = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/Flight-Booking-Website/
 
     <link rel="stylesheet" href="<?= $baseUrl ?>/css/flight-details.css">
     <script src="<?= $baseUrl ?>/js/jquery.min.js"></script>
-    <?php include '../navbar/navbar_css.php'; ?>
-    <style>
-        body {
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
-                        url('../images/photo-1436491865332-7a61a109cc05.avif');
-            background-size: cover;
-            background-position: center;
-        }
-    </style>
 </head>
 <body>
-<?php include '../navbar/navbar.php'; ?>
+
+<header class="navbar">
+    <div class="logo">
+        ✈ <span>SKYBOOK</span>
+    </div>
+    <nav>
+        <a href="search.php">Home</a>
+        <a href="login.php">Login</a>
+        <a class="btn-register" href="register.php">Register</a>
+    </nav>
+</header>
 
 <div class="container">
     <div id="flightDetails" class="card">

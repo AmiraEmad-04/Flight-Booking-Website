@@ -13,11 +13,12 @@ class Message {
     public function getChats($myUserId) {
         $sql = "SELECT DISTINCT
                 CASE 
-                    WHEN sender_id = :my_id THEN receiver_id
-                    ELSE sender_id
+                    WHEN m.sender_id = :my_id THEN m.receiver_id
+                    ELSE m.sender_id
                 END as chat_with_user_id,
                 u.name,
                 u.type,
+                COALESCE(c.logo_img, p.photo) as user_image,
                 (SELECT message FROM messages 
                  WHERE (sender_id = :my_id2 AND receiver_id = chat_with_user_id)
                     OR (receiver_id = :my_id3 AND sender_id = chat_with_user_id)
@@ -26,16 +27,16 @@ class Message {
                  WHERE (sender_id = :my_id4 AND receiver_id = chat_with_user_id)
                     OR (receiver_id = :my_id5 AND sender_id = chat_with_user_id)
                  ORDER BY sent_at DESC LIMIT 1) as last_time
-                    FROM messages m
-                    WHERE m.sender_id = :my_id2 OR m.receiver_id = :my_id3
-                    GROUP BY chat_with_user_id
-                ) t
-                JOIN users u ON u.id = t.chat_with_user_id
-                JOIN messages lm ON (
-                    (lm.sender_id = :my_id4 AND lm.receiver_id = t.chat_with_user_id)
-                    OR (lm.receiver_id = :my_id5 AND lm.sender_id = t.chat_with_user_id)
-                ) AND lm.sent_at = t.last_time
-                ORDER BY t.last_time DESC";
+                FROM messages m
+                JOIN users u ON u.id = CASE 
+                    WHEN m.sender_id = :my_id6 THEN m.receiver_id
+                    ELSE m.sender_id
+                END
+                LEFT JOIN companies c ON c.user_id = u.id AND u.type = 'company'
+                LEFT JOIN passengers p ON p.user_id = u.id AND u.type = 'passenger'
+                WHERE m.sender_id = :my_id7 OR m.receiver_id = :my_id8
+                GROUP BY chat_with_user_id, u.name, u.type, user_image
+                ORDER BY last_time DESC";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -43,7 +44,10 @@ class Message {
             'my_id2' => $myUserId,
             'my_id3' => $myUserId,
             'my_id4' => $myUserId,
-            'my_id5' => $myUserId
+            'my_id5' => $myUserId,
+            'my_id6' => $myUserId,
+            'my_id7' => $myUserId,
+            'my_id8' => $myUserId
         ]);
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -96,7 +96,7 @@ function displayFlightDetails(f) {
                 ✈ Book This Flight
             </button>
 
-            <button class="btn-message" onclick="messageCompany()">
+            <button class="btn-message" onclick="messageCompany(${flightId})">
                 💬 Message Company
             </button>
         </div>
@@ -119,12 +119,22 @@ function closeBookingPopup() {
     $('#bookingFrame').attr('src', '');
 }
 
-
-/**
- * Open messaging interface
- */
-function messageCompany() {
-    // TODO: Implement messaging
-    alert('Messaging feature coming soon!');
+function messageCompany(flightId) {
+    // First get company_id from flight_id
+    $.ajax({
+        url: '../../Backend/services/message.php?action=start_chat&flight_id=' + flightId,
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            if (data.status === 'success') {
+                // Redirect to messages page with company_id
+                window.location.href = "./Messages/messages.php?company_id=" + data.company_id + "&flight_id=" + data.flight_id;
+            } else {
+                alert('Error: ' + data.message);
+            }
+        },
+        error: function() {
+            alert('Failed to start conversation');
+        }
+    });
 }
-

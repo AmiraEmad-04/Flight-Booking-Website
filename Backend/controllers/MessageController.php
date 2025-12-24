@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../models/Message.php';
 
 class MessageController {
@@ -35,7 +34,7 @@ class MessageController {
         return ['status' => 'success', 'messages' => $messages];
     }
 
-    // Send message
+    // Send message (FIXED - removed echo)
     public function sendMessage($data) {
         if (!isset($_SESSION['user_id'])) {
             return ['status' => 'error', 'message' => 'Not logged in'];
@@ -53,7 +52,7 @@ class MessageController {
             return ['status' => 'error', 'message' => 'Message cannot be empty'];
         }
 
-        echo $sent = $this->messageModel->send($_SESSION['user_id'], $toId, $msg, $flightId);
+        $sent = $this->messageModel->send($_SESSION['user_id'], $toId, $msg, $flightId);
         
         if ($sent) {
             return ['status' => 'success', 'time' => date('h:i A')];

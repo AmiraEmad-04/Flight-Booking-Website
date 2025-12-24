@@ -1,7 +1,7 @@
 <!-- Navbar Styles -->
 <style>
     header {
-        padding: 0;
+        padding: 10px;
         position: absolute;
         width: 100%;
         top: 0;

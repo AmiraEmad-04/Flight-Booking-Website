@@ -36,11 +36,18 @@ unset($_SESSION['success']);
     <title>Company Profile</title>
     <link rel="stylesheet" href="../../css/company/company-styles.css">
     <?php include '../../navbar/navbar_css.php'; ?>
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('../../images/photo-1436491865332-7a61a109cc05.avif');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
    
 </head>
 <body>
  <?php include '../../navbar/navbar.php'; ?>
-
 
 <!-- Main Content -->
 <div class="container" style="max-width: 800px; margin-top: 3rem;">

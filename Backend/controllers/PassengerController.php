@@ -13,29 +13,39 @@ class PassengerController
         $this->flightModel    = new Flight();
     }
     
-    public function home($passengerId)
+    public function home($userId)
     {
-        // Get passenger data
-        $passenger = $this->passengerModel->getById($passengerId);
-        
-        // If passenger not found, return false is returned by getById
-        if ($passenger === false) {
-            return ['status' => false, 'message' => 'Passenger not found'];
+        // get passenger by user_id
+        $passenger = $this->passengerModel->getByUserId($userId);
+    
+        if (!$passenger) {
+            return [
+                'status' => false,
+                'message' => 'Passenger not found'
+            ];
         }
+    
+        $passengerId = $passenger['id'];
+    
+        $currentFlights = $this->passengerModel->getFlights(
+            $passengerId,
+            ['pending', 'registered']
+        );
         
-        // Get completed flights
-        $completedFlights = $this->passengerModel->getFlights($passengerId, ['completed']);
+        $completedFlights = $this->passengerModel->getFlights(
+            $passengerId,
+            ['completed']
+        );
         
-        // Get current flights (pending + registered)
-        $currentFlights = $this->passengerModel->getFlights($passengerId, ['pending', 'registered']);
-        
+    
         return [
             'status' => true,
             'passenger' => $passenger,
-            'completedFlights' => $completedFlights,
-            'currentFlights' => $currentFlights
+            'currentFlights' => $currentFlights,
+            'completedFlights' => $completedFlights
         ];
     }
+    
     
     public function profile($passengerId)
     {

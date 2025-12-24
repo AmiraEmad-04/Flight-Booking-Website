@@ -169,5 +169,23 @@ public function updateProfile($passengerId, $data)
         return false;
     }
 }
+public function getByUserId($userId)
+{
+    $stmt = $this->conn->prepare("
+        SELECT 
+            p.id AS passenger_id,
+            p.*,
+            u.name,
+            u.email,
+            u.tel,
+            u.account_balance
+        FROM passengers p
+        JOIN users u ON p.user_id = u.id
+        WHERE p.user_id = ?
+    ");
+    $stmt->execute([$userId]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 }
 ?>

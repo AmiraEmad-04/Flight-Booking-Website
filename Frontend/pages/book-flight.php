@@ -17,8 +17,18 @@ if (!$flightId) {
 
     <link rel="stylesheet" href="../css/book-flight.css">
     <script src="../js/jquery.min.js"></script>
+    <?php include '../navbar/navbar_css.php'; ?>
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('../../images/photo-1436491865332-7a61a109cc05.avif');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
 </head>
 <body>
+    <?php include '../navbar/navbar.php'; ?>
 
 <div class="booking-card">
     <h2>Book Flight</h2>

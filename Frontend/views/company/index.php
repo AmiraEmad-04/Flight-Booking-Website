@@ -119,7 +119,7 @@ unset($_SESSION['success'], $_SESSION['errors']);
     <div class="content-card">
         <div class="card-header">
             <h2 class="card-title">Your Flights</h2>
-            <a href="#" class="btn btn-secondary">Messages</a>
+            <a href="../../pages/Messages/messages.php" class="btn btn-secondary">Messages</a>
         </div>
         
         <?php if (empty($flights)): ?>
